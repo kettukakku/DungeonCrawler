@@ -1,0 +1,38 @@
+universal:
+  health_potion:
+    name: Health Potion
+    type: consumable
+    img: "res://PlaceholderArt/potion.png"
+    effect:
+      action: Heal
+      amount: 20
+    rarity: 1
+
+stone:
+  steel_sword:
+    name: Steel Sword
+    type: mainhand
+    img: ""
+    damage: 5
+    rarity: 2
+
+ice:
+  ice_wand:
+    name: Ice Wand
+    type: offhand
+    img: ""
+    damage: 5
+    ability:
+      action: Freeze
+      amount: 50
+    rarity: 3
+
+lava:
+  large_health_potion:
+    name: Large Health Potion
+    type: consumable
+    img: ""
+    effect:
+      action: Heal
+      amount: 40
+    rarity: 2
