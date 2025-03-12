@@ -21,21 +21,21 @@ This is largely a test project making use of some art from a game jam. But maybe
 
 ## 📝 Todo 
 - [ ] Implement inventory.
+    - [x] ~~GameManager loads an Inventory instance.
+    - [ ] Create action to pick up items.
 - [ ] Create enemy database.
 - [ ] Visualize enemies in dungeon.
 - [ ] Implement player stats.
 - [ ] Implement combat bar with base attack.
 - [ ] Create cosmetic item database.
 
-<details>
-<summary>## ✅ Completed Tasks</summary>
+## ✅ Completed Tasks
 - [x] ~~Implement recursive backtracking algorithm for dungeon generation.~~  
 - [x] ~~Create RoomData to store exits, items, and enemies.~~  
 - [x] ~~Visualize the dungeon with placeholder assets and add movement through rooms.~~  
 - [x] ~~Create item database using JSON/YAML to edit properties.~~  
 - [x] ~~Set up JSON parser to read data, validate properties, and create internal database.~~ 
 - [x] ~~Visualize items in dungeon.~~
-</details>
 
 ### 📌 Notes
 > - ...

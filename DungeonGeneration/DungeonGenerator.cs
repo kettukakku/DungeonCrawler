@@ -128,6 +128,12 @@ public class DungeonGenerator : Node
 
     void SetLootTable()
     {
+        if (Database.Instance == null)
+        {
+            GD.PushError("Database instance is null!");
+            return;
+        }
+
         foreach (string id in Database.Instance.Items.GetDungeonItemIds(dungeonType))
         {
             Item item = Database.Instance.Items.GetItemById(id, dungeonType);

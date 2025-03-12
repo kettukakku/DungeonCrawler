@@ -16,8 +16,8 @@ config/icon="res://icon.png"
 
 [autoload]
 
-GameManager="*res://GameManager.tscn"
 Database="*res://Databases/Database.tscn"
+GameManager="*res://GameManager.tscn"
 
 [gui]
 
