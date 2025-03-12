@@ -14,7 +14,9 @@ public class Inventory : Node
             return;
         }
 
-        items.Add(Database.Instance.Items.GetItemById(id, dungeonType));
+        Item item = Database.Instance.Items.GetItemById(id, dungeonType);
+        items.Add(item);
+        GD.Print($"Added {item} to inventory");
     }
 
     public void RemoveItem(Item itemToRemove)

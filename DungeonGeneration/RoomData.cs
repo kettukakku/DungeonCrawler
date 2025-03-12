@@ -37,7 +37,7 @@ public class RoomData
         itemIDs.Add(item);
     }
 
-    public void RemoveItem()
+    public void RemoveItem(string itemID)
     {
 
     }

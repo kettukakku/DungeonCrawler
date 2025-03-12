@@ -15,7 +15,7 @@
     "steel_sword": {
       "name": "Steel Sword",
       "type": "mainhand",
-      "img": "",
+      "img": "res://icon.png",
       "damage": 5,
       "rarity": 2
     }
@@ -24,7 +24,7 @@
     "ice_wand": {
       "name": "Ice Wand",
       "type": "offhand",
-      "img": "",
+      "img": "res://icon.png",
       "damage": 5,
       "ability": {
         "action": "Freeze",
@@ -37,7 +37,7 @@
     "large_health_potion": {
       "name": "Large Health Potion",
       "type": "consumable",
-      "img": "",
+      "img": "res://icon.png",
       "effect": {
         "action": "Heal",
         "amount": 40

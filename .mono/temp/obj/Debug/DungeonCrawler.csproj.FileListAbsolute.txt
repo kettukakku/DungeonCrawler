@@ -18,3 +18,4 @@
 /Users/darien/Godot/DungeonCrawler/.mono/temp/obj/Debug/DungeonC.EA0EDB72.Up2Date
 /Users/darien/Godot/DungeonCrawler/.mono/temp/obj/Debug/DungeonCrawler.dll
 /Users/darien/Godot/DungeonCrawler/.mono/temp/obj/Debug/DungeonCrawler.pdb
+/Users/darien/Godot/DungeonCrawler/.mono/temp/obj/Debug/DungeonCrawler.sourcelink.json
