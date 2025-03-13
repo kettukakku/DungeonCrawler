@@ -1,4 +1,19 @@
-.vscode
-.prettierignore
+# Godot-specific ignores
+.import/
+export.cfg
+export_credentials.cfg
 Exports/
-DS_Store
+
+# Imported translations (automatically generated from CSV files)
+*.translation
+
+# Mono-specific ignores
+.mono/
+data_*/
+mono_crash.*.json
+
+# IDE-specific
+.vscode/
+
+# Platform-specific
+.DS_Store/

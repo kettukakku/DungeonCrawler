@@ -37,9 +37,9 @@ public class RoomData
         itemIDs.Add(item);
     }
 
-    public void RemoveItem(string itemID)
+    public void RemoveItem(string item)
     {
-
+        itemIDs.Remove(item);
     }
 
     public void AddEnemy(string enemy)
@@ -47,9 +47,9 @@ public class RoomData
         enemyIDs.Add(enemy);
     }
 
-    public void RemoveEnemy()
+    public void RemoveEnemy(string enemy)
     {
-
+        enemyIDs.Remove(enemy);
     }
 
     public void Enter()

@@ -1,4 +1,6 @@
-[gd_scene format=2]
+[gd_scene load_steps=2 format=2]
+
+[ext_resource path="res://DungeonGeneration/RoomItem.cs" type="Script" id=1]
 
 [node name="RoomItem" type="TextureRect"]
 margin_left = 204.0
@@ -7,3 +9,4 @@ margin_bottom = 244.0
 rect_min_size = Vector2( 200, 200 )
 expand = true
 stretch_mode = 5
+script = ExtResource( 1 )

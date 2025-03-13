@@ -12,14 +12,15 @@ public class GameManager : Node
 
     public override void _Ready()
     {
+        Instance = this;
         Init();
     }
 
     void Init()
     {
-        inventory = new Inventory();
         player = new Player();
-
+        inventory = GD.Load<PackedScene>("res://Inventory/InventoryMenu.tscn").Instance() as Inventory;
+        AddChild(inventory);
         dungeonGenerator = GD.Load<PackedScene>("res://DungeonGeneration/DungeonGenerator.tscn").Instance() as DungeonGenerator;
         AddChild(dungeonGenerator);
     }

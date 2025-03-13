@@ -1,23 +1,49 @@
 using Godot;
 using System.Collections.Generic;
 
-public class Inventory : Node
+public class Inventory : CanvasLayer
 {
-    int max = 25;
+    int max = 5;
+    GridContainer grid;
+    PackedScene itemPrefab;
+    List<MenuItemContainer> itemContainers = new List<MenuItemContainer>();
     List<Item> items = new List<Item>();
+    List<MenuItemContainer> containers = new List<MenuItemContainer>();
 
-    public void AddItem(string id, DungeonType dungeonType)
+
+    public override void _Ready()
     {
-        if (items.Count == max)
+        grid = GetNode<GridContainer>("PanelContainer/MarginContainer/GridContainer");
+        itemPrefab = GD.Load<PackedScene>("res://Inventory/MenuItemContainer.tscn");
+        CreateSlots();
+        Visible = false;
+    }
+
+    public override void _Input(InputEvent @event)
+    {
+        if (@event.IsActionPressed("toggle_inventory"))
+        {
+            Visible = !Visible;
+        }
+    }
+
+
+    public bool AddItem(string id, DungeonType dungeonType)
+    {
+        int emptyIndex = items.IndexOf(null);
+        if (emptyIndex == -1)
         {
             GD.Print("Inventory full!");
-            return;
+            return false;
         }
-
         Item item = Database.Instance.Items.GetItemById(id, dungeonType);
-        items.Add(item);
-        GD.Print($"Added {item} to inventory");
+        items[emptyIndex] = item;
+        containers[emptyIndex].SetImg(GD.Load<Texture>(item.Img));
+        return true;
     }
+
+
+
 
     public void RemoveItem(Item itemToRemove)
     {
@@ -28,6 +54,19 @@ public class Inventory : Node
         else
         {
             GD.PrintErr($"{itemToRemove} doesn't exist in inventory!");
+        }
+    }
+
+    public void CreateSlots()
+    {
+        int amount = max - grid.GetChildCount();
+
+        for (int i = 0; i < amount; i++)
+        {
+            MenuItemContainer slot = itemPrefab.Instance() as MenuItemContainer;
+            grid.AddChild(slot);
+            containers.Add(slot);
+            items.Add(null);
         }
     }
 }

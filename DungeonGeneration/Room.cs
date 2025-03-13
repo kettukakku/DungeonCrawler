@@ -5,13 +5,26 @@ public class Room : TextureRect
 {
     PackedScene containerScene;
     PackedScene itemScene;
+    RoomData roomData;
 
     DungeonType dungeonType;
+    List<RoomItem> itemList = new List<RoomItem>();
 
     public override void _Ready()
     {
         containerScene = GD.Load<PackedScene>("res://DungeonGeneration/ItemContainer.tscn");
         itemScene = GD.Load<PackedScene>("res://DungeonGeneration/RoomItem.tscn");
+    }
+
+    public override void _Input(InputEvent @event)
+    {
+        if (@event.IsActionPressed("pickup"))
+        {
+            foreach (RoomItem item in itemList)
+            {
+                item.TryToPickup();
+            }
+        }
     }
 
 
@@ -23,46 +36,50 @@ public class Room : TextureRect
     public void FillRoom(RoomData data)
     {
         ClearRoom();
+        roomData = data;
 
-        ShowExits(data.exits);
-        ShowItems(data.itemIDs);
+
+        ShowExits();
+        ShowItems();
     }
 
-    void ShowExits(Direction direction)
+    void ShowExits()
     {
-        if (direction.HasFlag(Direction.North))
+        if (roomData.exits.HasFlag(Direction.North))
         {
             SpawnTextureRect(Direction.North);
         }
-        if (direction.HasFlag(Direction.South))
+        if (roomData.exits.HasFlag(Direction.South))
         {
             SpawnTextureRect(Direction.South);
         }
-        if (direction.HasFlag(Direction.East))
+        if (roomData.exits.HasFlag(Direction.East))
         {
             SpawnTextureRect(Direction.East);
         }
-        if (direction.HasFlag(Direction.West))
+        if (roomData.exits.HasFlag(Direction.West))
         {
             SpawnTextureRect(Direction.West);
         }
     }
 
-    void ShowItems(List<string> items)
+    void ShowItems()
     {
-        if (items.Count == 0) return;
+        if (roomData.itemIDs.Count == 0) return;
 
         Control container = containerScene.Instance() as Control;
         AddChild(container);
 
-        foreach (string itemID in items)
+        foreach (string itemID in roomData.itemIDs)
         {
             Item item = Database.Instance.Items.GetItemById(itemID);
             GD.Print($"This room has a {item.Name}");
 
-            TextureRect itemRect = itemScene.Instance() as TextureRect;
+            RoomItem itemRect = itemScene.Instance() as RoomItem;
             container.AddChild(itemRect);
             itemRect.Texture = GD.Load<Texture>(item.Img);
+            itemRect.Init(itemID, dungeonType, roomData);
+            itemList.Add(itemRect);
         }
     }
 
@@ -82,6 +99,7 @@ public class Room : TextureRect
         {
             child.QueueFree();
         }
+        itemList.Clear();
     }
 
     readonly Dictionary<Direction, string> ExitMap = new Dictionary<Direction, string>()

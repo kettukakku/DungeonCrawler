@@ -6,27 +6,37 @@ using System.Linq;
 
 public class DungeonGenerator : Node
 {
+    // Exported Configuration
     [Export] public int mapHeight = 12;
     [Export] public int mapWidth = 15;
     [Export] public float dropChance = 0.3f;
 
-    PackedScene mapTilePrefab;
-    PackedScene roomPrefab;
-    Node container;
+    // Scene References
+    private PackedScene mapTilePrefab;
+    private PackedScene roomPrefab;
+    private Node container;
 
-    int seed = -1;
-    Random random;
-    RoomData[,] rooms;
-    MapTile[,] tiles;
-    Vector2Int currentPosition;
-    Vector2Int goalPosition;
-    Room room;
-    int level = 1;
-    DungeonType dungeonType;
-    List<(string, int)> lootTable = new List<(string, int)>(); //itemID + rarity
-    int totalWeight = 0;
+    // Dungeon State
+    private int level = 1;
+    private DungeonType dungeonType;
+    private Room room;
+    private Vector2Int currentPosition;
+    private Vector2Int goalPosition;
 
-    readonly Stopwatch stopwatch = new Stopwatch();
+    // Map Data
+    private RoomData[,] rooms;
+    private MapTile[,] tiles;
+
+    // Randomization
+    private int seed = -1;
+    private Random random;
+
+    // Loot System
+    private List<(string, int)> lootTable = new List<(string, int)>();
+    private int totalWeight = 0;
+
+    // Diagnostics
+    private readonly Stopwatch stopwatch = new Stopwatch();
 
     public override void _Ready()
     {
@@ -79,8 +89,6 @@ public class DungeonGenerator : Node
         room = roomPrefab.Instance() as Room;
         AddChild(room);
     }
-
-
 
 
     void RandomizeSeed()

@@ -1,4 +1,4 @@
-``` __| |____________________________________________________| |__
+```__| |____________________________________________________| |__
  __   ____________________________________________________   __
    | |                                                    | |
    | |________                  ____                      | |
@@ -19,10 +19,13 @@
 
 This is largely a test project making use of some art from a game jam. But maybe it will become something fun.
 
-## 📝 Todo 
+## 📝 Todo
+
 - [ ] Implement inventory.
-    - [x] ~~GameManager loads an Inventory instance.
-    - [ ] Create action to pick up items.
+  - [x] ~~GameManager loads an Inventory instance.
+  - [x] ~~Create action to pick up items.~~
+  - [x] ~~Visualize inventory.~~
+  - [ ] Handle item removal.
 - [ ] Create enemy database.
 - [ ] Visualize enemies in dungeon.
 - [ ] Implement player stats.
@@ -30,17 +33,17 @@ This is largely a test project making use of some art from a game jam. But maybe
 - [ ] Create cosmetic item database.
 
 ## ✅ Completed Tasks
-- [x] ~~Implement recursive backtracking algorithm for dungeon generation.~~  
-- [x] ~~Create RoomData to store exits, items, and enemies.~~  
-- [x] ~~Visualize the dungeon with placeholder assets and add movement through rooms.~~  
-- [x] ~~Create item database using JSON/YAML to edit properties.~~  
-- [x] ~~Set up JSON parser to read data, validate properties, and create internal database.~~ 
+
+- [x] ~~Implement recursive backtracking algorithm for dungeon generation.~~
+- [x] ~~Create RoomData to store exits, items, and enemies.~~
+- [x] ~~Visualize the dungeon with placeholder assets and add movement through rooms.~~
+- [x] ~~Create item database using JSON/YAML to edit properties.~~
+- [x] ~~Set up JSON parser to read data, validate properties, and create internal database.~~
 - [x] ~~Visualize items in dungeon.~~
 
 ### 📌 Notes
-> - ...
-> - ...
-> - ...
-> - ...
 
-*Updated: 2025-03-12*
+> - ...
+> - ...
+> - ...
+> - ...
