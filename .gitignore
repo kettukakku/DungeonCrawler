@@ -16,4 +16,4 @@ mono_crash.*.json
 .vscode/
 
 # Platform-specific
-.DS_Store/
+.DS_Store
