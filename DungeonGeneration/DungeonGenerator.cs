@@ -238,7 +238,7 @@ public class DungeonGenerator : Node
             int nx = cx + DirectionMap[direction].x;
             int ny = cy + DirectionMap[direction].y;
 
-            if (ny.Between(0, mapHeight - 1) && nx.Between(0, mapWidth - 1) && rooms[ny, nx].exits == 0)
+            if (ny.Between(0, mapHeight - 1) && nx.Between(0, mapWidth - 1) && rooms[ny, nx].Exits == 0)
             {
                 rooms[cy, cx].SetExits(direction);
                 rooms[ny, nx].SetExits(Opposite[direction]);
@@ -273,7 +273,7 @@ public class DungeonGenerator : Node
 
     void TryToMove(Direction direction)
     {
-        if (rooms[currentPosition.y, currentPosition.x].exits.HasFlag(direction))
+        if (rooms[currentPosition.y, currentPosition.x].Exits.HasFlag(direction))
         {
             rooms[currentPosition.y, currentPosition.x].Exit();
             currentPosition += DirectionMap[direction];

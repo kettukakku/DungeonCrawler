@@ -15,7 +15,7 @@ public class MapTile : TextureRect
     public void SetLinkedRoom(RoomData room)
     {
         linkedRoom = room;
-        positionLabel.Text = $"{linkedRoom.position.x}, {linkedRoom.position.y}";
+        positionLabel.Text = $"{linkedRoom.Position.x}, {linkedRoom.Position.y}";
         linkedRoom.OnExitsChanged += SetExits;
         linkedRoom.OnEnter += Enter;
         linkedRoom.OnExit += Exit;

@@ -5,18 +5,15 @@ public class Inventory : CanvasLayer
 {
     int max = 5;
     GridContainer grid;
+    ActionPopup actionPopup;
     PackedScene itemPrefab;
-    List<MenuItemContainer> itemContainers = new List<MenuItemContainer>();
     List<Item> items = new List<Item>();
     List<MenuItemContainer> containers = new List<MenuItemContainer>();
 
 
     public override void _Ready()
     {
-        grid = GetNode<GridContainer>("PanelContainer/MarginContainer/GridContainer");
-        itemPrefab = GD.Load<PackedScene>("res://Inventory/MenuItemContainer.tscn");
-        CreateSlots();
-        Visible = false;
+        Init();
     }
 
     public override void _Input(InputEvent @event)
@@ -25,8 +22,25 @@ public class Inventory : CanvasLayer
         {
             Visible = !Visible;
         }
+        if (@event.IsActionPressed("ui_cancel"))
+        {
+            Visible = false;
+        }
     }
 
+    void Init()
+    {
+        grid = GetNode<GridContainer>("PanelContainer/MarginContainer/GridContainer");
+        actionPopup = GD.Load<PackedScene>("res://Inventory/ActionPopup.tscn").Instance() as ActionPopup;
+        AddChild(actionPopup);
+        //actionPopup.OnItemUsed += UseItem;
+        actionPopup.OnItemTossed += RemoveItem;
+
+        itemPrefab = GD.Load<PackedScene>("res://Inventory/MenuItemContainer.tscn");
+        CreateSlots();
+
+        Visible = false;
+    }
 
     public bool AddItem(string id, DungeonType dungeonType)
     {
@@ -38,23 +52,20 @@ public class Inventory : CanvasLayer
         }
         Item item = Database.Instance.Items.GetItemById(id, dungeonType);
         items[emptyIndex] = item;
-        containers[emptyIndex].SetImg(GD.Load<Texture>(item.Img));
+        containers[emptyIndex].SetItem(GD.Load<Texture>(item.Img));
         return true;
     }
 
-
-
-
-    public void RemoveItem(Item itemToRemove)
+    public void RemoveItem(int index)
     {
-        if (items.Remove(itemToRemove))
+        if (!IsIndexValid(index))
         {
-            GD.Print($"{itemToRemove.Name} was removed!");
+            GD.PrintErr($"Item popup contains an invalid index ({index}). Can't remove item from inventory.");
+            return;
         }
-        else
-        {
-            GD.PrintErr($"{itemToRemove} doesn't exist in inventory!");
-        }
+
+        items.RemoveAt(index);
+        containers[index].ClearImg();
     }
 
     public void CreateSlots()
@@ -66,7 +77,34 @@ public class Inventory : CanvasLayer
             MenuItemContainer slot = itemPrefab.Instance() as MenuItemContainer;
             grid.AddChild(slot);
             containers.Add(slot);
+            slot.SetIndex(i);
+            slot.OnMenuItemClicked += ShowActionMenu;
             items.Add(null);
         }
+    }
+
+    void ShowActionMenu(int index)
+    {
+        if (!IsIndexValid(index))
+        {
+            GD.PrintErr($"Menu item container holds an invalid index ({index}). Can't open item action popup.");
+            return;
+        }
+
+        actionPopup.Visible = true;
+        actionPopup.SetPopupItem(index, items[index].Name);
+    }
+
+    public override void _ExitTree()
+    {
+        foreach (MenuItemContainer slot in containers)
+        {
+            slot.OnMenuItemClicked -= ShowActionMenu;
+        }
+    }
+
+    bool IsIndexValid(int index)
+    {
+        return !(index < 0 || index >= items.Count || items[index] == null);
     }
 }

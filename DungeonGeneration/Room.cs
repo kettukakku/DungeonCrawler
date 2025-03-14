@@ -20,13 +20,12 @@ public class Room : TextureRect
     {
         if (@event.IsActionPressed("pickup"))
         {
-            foreach (RoomItem item in itemList)
+            foreach (RoomItem item in itemList.ToArray())
             {
                 item.TryToPickup();
             }
         }
     }
-
 
     public void SetType(DungeonType type)
     {
@@ -45,19 +44,19 @@ public class Room : TextureRect
 
     void ShowExits()
     {
-        if (roomData.exits.HasFlag(Direction.North))
+        if (roomData.Exits.HasFlag(Direction.North))
         {
             SpawnTextureRect(Direction.North);
         }
-        if (roomData.exits.HasFlag(Direction.South))
+        if (roomData.Exits.HasFlag(Direction.South))
         {
             SpawnTextureRect(Direction.South);
         }
-        if (roomData.exits.HasFlag(Direction.East))
+        if (roomData.Exits.HasFlag(Direction.East))
         {
             SpawnTextureRect(Direction.East);
         }
-        if (roomData.exits.HasFlag(Direction.West))
+        if (roomData.Exits.HasFlag(Direction.West))
         {
             SpawnTextureRect(Direction.West);
         }
@@ -65,12 +64,12 @@ public class Room : TextureRect
 
     void ShowItems()
     {
-        if (roomData.itemIDs.Count == 0) return;
+        if (roomData.ItemIDs.Count == 0) return;
 
         Control container = containerScene.Instance() as Control;
         AddChild(container);
 
-        foreach (string itemID in roomData.itemIDs)
+        foreach (string itemID in roomData.ItemIDs)
         {
             Item item = Database.Instance.Items.GetItemById(itemID);
             GD.Print($"This room has a {item.Name}");
@@ -80,7 +79,21 @@ public class Room : TextureRect
             itemRect.Texture = GD.Load<Texture>(item.Img);
             itemRect.Init(itemID, dungeonType, roomData);
             itemList.Add(itemRect);
+            itemRect.OnDestroy += RemoveItem;
         }
+    }
+
+    void RemoveItem(RoomItem item)
+    {
+        int index = itemList.IndexOf(item);
+        if (index == -1)
+        {
+            GD.PrintErr($"{item} does not exist in {this}!");
+            return;
+        }
+
+        itemList[index].OnDestroy -= RemoveItem;
+        itemList.RemoveAt(index);
     }
 
     void SpawnTextureRect(Direction direction)
@@ -100,6 +113,14 @@ public class Room : TextureRect
             child.QueueFree();
         }
         itemList.Clear();
+    }
+
+    public override void _ExitTree()
+    {
+        foreach (RoomItem item in itemList)
+        {
+            item.OnDestroy -= RemoveItem;
+        }
     }
 
     readonly Dictionary<Direction, string> ExitMap = new Dictionary<Direction, string>()

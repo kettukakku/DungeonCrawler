@@ -4,13 +4,13 @@ using Godot;
 
 public class RoomData
 {
-    public Vector2Int position { get; private set; }
-    public Direction exits { get; private set; }
-    public bool visited { get; private set; } = false;
-    public bool isCurrent { get; private set; } = false;
-    public bool hasGoal { get; private set; } = false;
-    public List<string> enemyIDs { get; private set; } = new List<string>();
-    public List<string> itemIDs { get; private set; } = new List<string>();
+    public Vector2Int Position { get; private set; }
+    public Direction Exits { get; private set; }
+    public bool Visited { get; private set; } = false;
+    public bool IsCurrent { get; private set; } = false;
+    public bool HasGoal { get; private set; } = false;
+    public List<string> EnemyIDs { get; private set; } = new List<string>();
+    public List<string> ItemIDs { get; private set; } = new List<string>();
 
     public event Action<Direction> OnExitsChanged;
     public event Action OnEnter;
@@ -18,50 +18,50 @@ public class RoomData
 
     public RoomData(int x, int y)
     {
-        position = new Vector2Int(x, y);
+        Position = new Vector2Int(x, y);
     }
 
     public void SetExits(Direction directions)
     {
-        exits |= directions;
-        OnExitsChanged?.Invoke(exits);
+        Exits |= directions;
+        OnExitsChanged?.Invoke(Exits);
     }
 
     public void SetGoal()
     {
-        hasGoal = true;
+        HasGoal = true;
     }
 
     public void AddItem(string item)
     {
-        itemIDs.Add(item);
+        ItemIDs.Add(item);
     }
 
     public void RemoveItem(string item)
     {
-        itemIDs.Remove(item);
+        ItemIDs.Remove(item);
     }
 
     public void AddEnemy(string enemy)
     {
-        enemyIDs.Add(enemy);
+        EnemyIDs.Add(enemy);
     }
 
     public void RemoveEnemy(string enemy)
     {
-        enemyIDs.Remove(enemy);
+        EnemyIDs.Remove(enemy);
     }
 
     public void Enter()
     {
-        isCurrent = true;
-        visited = true;
+        IsCurrent = true;
+        Visited = true;
         OnEnter?.Invoke();
     }
 
     public void Exit()
     {
-        isCurrent = false;
+        IsCurrent = false;
         OnExit?.Invoke();
     }
 }
