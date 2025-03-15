@@ -6,13 +6,14 @@ public class Database : Node
     public static Database Instance;
 
     public ItemDatabase Items = new ItemDatabase();
-    // enemy database
-    // 
+    public EnemyDatabase Enemies = new EnemyDatabase();
+    // Cosmetic items
 
     public override void _Ready()
     {
         Instance = this;
         LoadItemDB();
+        // LoadEnemyDB();
     }
 
     void LoadItemDB()

@@ -37,7 +37,7 @@
     "large_health_potion": {
       "name": "Large Health Potion",
       "type": "consumable",
-      "img": "res://icon.png",
+      "img": "res://PlaceholderArt/potion.png",
       "effect": {
         "action": "Heal",
         "amount": 40

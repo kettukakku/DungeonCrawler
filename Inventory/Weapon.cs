@@ -24,7 +24,7 @@ public class BaseAttackAbility : IWeaponAbility
 
     public void Apply(Entity target)
     {
-        target.Damage(GetCalculatedDamage());
+        target.TakeDamage(GetCalculatedDamage());
     }
 
     int GetCalculatedDamage()

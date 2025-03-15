@@ -5,7 +5,7 @@ using Godot;
 
 public class ItemDatabase
 {
-    private readonly Dictionary<DungeonType, Dictionary<string, Item>> allItems = new Dictionary<DungeonType, Dictionary<string, Item>>();
+    readonly Dictionary<DungeonType, Dictionary<string, Item>> allItems = new Dictionary<DungeonType, Dictionary<string, Item>>();
 
     public void LoadFromJson(string json)
     {
@@ -22,18 +22,19 @@ public class ItemDatabase
 
         foreach (var dungeonEntry in rawData)
         {
-            var dungeonType = dungeonEntry.Key;
+            DungeonType dungeonType = dungeonEntry.Key;
             var items = new Dictionary<string, Item>();
 
             foreach (var itemEntry in dungeonEntry.Value)
             {
-                var itemId = itemEntry.Key;
-                var item = JsonSerializer.Deserialize<Item>(
+                Item item = JsonSerializer.Deserialize<Item>
+                (
                     itemEntry.Value.GetRawText(),
                     options
                 );
-                item.Id = itemId;
-                items[itemId] = item;
+
+                item.Id = itemEntry.Key;
+                items[item.Id] = item;
             }
 
             allItems[dungeonType] = items;

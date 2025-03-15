@@ -1,17 +1,25 @@
 using Godot;
-using System;
+using System.Collections.Generic;
 
 public class Entity
 {
-    int currentHealth;
-    int maxHealth;
-    int defence;
+    public string Name;
+    public Texture Img;
+    //animation list
 
-    public void Damage(int value)
+    // Core Stats //
+    public int CurrentHealth;
+    public int MaxHealth;
+    public int Defense; // amount used to block attacks.
+    public int Strength; // amount used to supplement attacks.
+    public int Dexterity; // amount used to calculate miss chance.
+
+
+    public void TakeDamage(int value)
     {
-        currentHealth -= Mathf.Clamp((value - defence), 0, maxHealth);
+        CurrentHealth -= Mathf.Clamp((value - Defense), 0, MaxHealth);
 
-        if (currentHealth <= 0)
+        if (CurrentHealth <= 0)
         {
             Die();
         }
@@ -19,7 +27,7 @@ public class Entity
 
     public void Heal(int value)
     {
-        currentHealth += Mathf.Clamp(value, 0, maxHealth);
+        CurrentHealth += Mathf.Clamp(value, 0, MaxHealth);
     }
 
     public void Die()
