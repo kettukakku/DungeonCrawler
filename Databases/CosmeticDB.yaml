@@ -1,4 +1,10 @@
 head:
-eyes:
+  id:
+    name:
+    img:
+face:
+torso:
+mainhand:
+offhand:
 arms:
 legs:

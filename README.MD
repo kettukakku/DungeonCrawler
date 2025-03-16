@@ -44,6 +44,7 @@ This is largely a test project making use of some art from a game jam. But maybe
   - [x] ~~Create action to pick up items.~~
   - [x] ~~Visualize inventory.~~
   - [x] ~~Handle item removal~~.
+  - [x] ~~Fixed bug where removed items were not null and new items couldn't be picked up~~
 
 ### 📌 Notes
 

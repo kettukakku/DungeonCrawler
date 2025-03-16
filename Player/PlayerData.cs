@@ -1,7 +1,7 @@
 using Godot;
 using System;
 
-public class PlayerData
+public class PlayerData //rename to save data
 {
     string username;
     int maxLevel;

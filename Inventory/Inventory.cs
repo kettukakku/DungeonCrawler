@@ -64,7 +64,7 @@ public class Inventory : CanvasLayer
             return;
         }
 
-        items.RemoveAt(index);
+        items[index] = null;
         containers[index].ClearImg();
     }
 
