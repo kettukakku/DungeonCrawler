@@ -4,7 +4,7 @@ using System.Collections.Generic;
 public class Entity
 {
     public string Name;
-    public Texture Img;
+    public string Img;
     //animation list
 
     // Core Stats //

@@ -1,0 +1,6 @@
+[gd_scene load_steps=2 format=2]
+
+[ext_resource path="res://Combat/CombatManager.cs" type="Script" id=1]
+
+[node name="CombatManager" type="Node"]
+script = ExtResource( 1 )

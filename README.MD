@@ -23,10 +23,13 @@ This is largely a test project making use of some art from a game jam. But maybe
 
 - [ ] Create enemy database.
   - [x] ~~Set up initial Enemy Database and plan schema of Enemy class.~~
-  - [ ] Create Enemy JSON Converter.
+  - [x] ~~Create Enemy JSON Converter.~~
+  - [ ] Set up Enemy move factory.
 - [ ] Visualize enemies in dungeon.
 - [ ] Implement player stats.
-- [ ] Implement combat bar with base attack.
+- [ ] Implement combat
+  - [x] ~~Set up turn order queue.~~
+  - [ ] Create player attack bar UI.
 - [ ] Create cosmetic item database.
 - [ ] Implement item 'use' function.
 - [ ] Implement error popups/feedback (inventory full, can't move, etc)

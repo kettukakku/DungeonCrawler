@@ -1,5 +1,4 @@
 using Godot;
-using System;
 
 public class Database : Node
 {
@@ -13,7 +12,7 @@ public class Database : Node
     {
         Instance = this;
         LoadItemDB();
-        // LoadEnemyDB();
+        LoadEnemyDB();
     }
 
     void LoadItemDB()
@@ -25,6 +24,23 @@ public class Database : Node
         {
             string content = file.GetAsText();
             Database.Instance.Items.LoadFromJson(content);
+            file.Close();
+        }
+        else
+        {
+            GD.PrintErr("Error reading file: ", err);
+        }
+    }
+
+    void LoadEnemyDB()
+    {
+        File file = new File();
+        Error err = file.Open("res://Databases/EnemyDB.json", File.ModeFlags.Read);
+
+        if (err == Error.Ok)
+        {
+            string content = file.GetAsText();
+            Database.Instance.Enemies.LoadFromJson(content);
             file.Close();
         }
         else

@@ -1,6 +1,18 @@
 {
-  "roach": {
-    "name": "Roach",
-    "img": ""
+  "stone": {
+    "stone_golem": {
+      "name": "Stone Golem",
+      "img": "res://icon.png",
+      "health": 200,
+      "defense": 10,
+      "strength": 10,
+      "dexterity": 3,
+      "moves": {
+        "action": "Boulder Slam",
+        "power": 15,
+        "accuracy": 90
+      },
+      "rarity": 1
+    }
   }
 }

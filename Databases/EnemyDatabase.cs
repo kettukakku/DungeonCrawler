@@ -15,7 +15,7 @@ public class EnemyDatabase //This is more or less a copy of ItemDatabase, but
         {
             Converters =
             {
-                //need to create custom enemy converter.
+                new EnemyConverter(),
                 new JsonStringEnumConverter()
             }
         };

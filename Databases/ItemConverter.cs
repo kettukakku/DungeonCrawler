@@ -1,6 +1,7 @@
 using System;
 using System.Text.Json;
 using System.Text.Json.Serialization;
+using static JsonUtils.Converters;
 using Godot;
 
 public class ItemConverter : JsonConverter<Item>
@@ -61,24 +62,5 @@ public class ItemConverter : JsonConverter<Item>
     public override void Write(Utf8JsonWriter writer, Item value, JsonSerializerOptions options)
     {
         throw new NotImplementedException();
-    }
-
-    string GetStringFromJson(JsonElement root, string property)
-    {
-        return GetValidatedJson(root, property).ToString();
-    }
-
-    int GetIntFromJson(JsonElement root, string property)
-    {
-        return GetValidatedJson(root, property).GetInt32();
-    }
-
-    JsonElement GetValidatedJson(JsonElement root, string property)
-    {
-        if (!root.TryGetProperty(property, out JsonElement element))
-        {
-            GD.PushError($"Missing required property: {property}");
-        }
-        return element;
     }
 }
