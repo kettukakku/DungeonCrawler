@@ -12,5 +12,29 @@ stone:
       accuracy: 90
     rarity: 1
 ice:
+  stone_golem:
+    name: Ice Giant
+    img: res://icon.png
+    health: 200
+    defense: 10
+    strength: 10
+    dexterity: 3
+    moves:
+      action: Boulder Slam
+      power: 15
+      accuracy: 90
+    rarity: 1
 
 lava:
+  stone_golem:
+    name: Lava Giant
+    img: res://icon.png
+    health: 200
+    defense: 10
+    strength: 10
+    dexterity: 3
+    moves:
+      action: Boulder Slam
+      power: 15
+      accuracy: 90
+    rarity: 1

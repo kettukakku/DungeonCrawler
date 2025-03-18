@@ -40,6 +40,7 @@ public class Room : TextureRect
 
         ShowExits();
         ShowItems();
+        ShowEnemies();
     }
 
     void ShowExits()
@@ -94,6 +95,19 @@ public class Room : TextureRect
 
         itemList[index].OnDestroy -= RemoveItem;
         itemList.RemoveAt(index);
+    }
+
+    void ShowEnemies()
+    {
+        if (roomData.EnemyIDs.Count == 0) return;
+
+        foreach (string enemyId in roomData.EnemyIDs)
+        {
+            Enemy enemy = Database.Instance.Enemies.GetEnemyById(enemyId);
+            GD.Print($"This room has a {enemy.Name}");
+
+            //set up visual
+        }
     }
 
     void SpawnTextureRect(Direction direction)

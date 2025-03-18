@@ -27,6 +27,7 @@ This is largely a test project making use of some art from a game jam. But maybe
   - [x] ~~Updated Enemy class to include Rarity~~
   - [ ] Set up Enemy move factory.
 - [ ] Visualize enemies in dungeon.
+  - [x] ~~Spawn enemy data in rooms.~~
 - [ ] Implement player stats.
 - [ ] Implement combat
   - [x] ~~Set up turn order queue.~~

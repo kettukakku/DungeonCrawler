@@ -10,6 +10,7 @@ public class DungeonGenerator : Node
     [Export] public int mapHeight = 12;
     [Export] public int mapWidth = 15;
     [Export] public float dropChance = 0.3f;
+    [Export] public float encounterChance = 0.2f;
 
     // Scene References
     PackedScene mapTilePrefab;
@@ -28,15 +29,14 @@ public class DungeonGenerator : Node
     MapTile[,] tiles;
 
     // Randomization
-    int seed = -1;
-    Random random;
+    Random random = new Random();
 
     // Loot System
     List<(string, int)> lootTable = new List<(string, int)>();
     int lootWeight = 0;
 
     // Enemies
-    List<(string, int)> enemyIds = new List<(string, int)>();
+    List<(string, int)> enemyTable = new List<(string, int)>();
     int enemyWeight = 0;
 
     // Diagnostics
@@ -94,17 +94,8 @@ public class DungeonGenerator : Node
         AddChild(room);
     }
 
-
-    void RandomizeSeed()
-    {
-        seed = Guid.NewGuid().GetHashCode(); //maybe overkill tbh
-        random = new Random(seed);
-    }
-
     void Generate()
     {
-        RandomizeSeed();
-
         stopwatch.Start();
 
         SetDungeonType();
@@ -120,6 +111,7 @@ public class DungeonGenerator : Node
         container.QueueFree();
         room.QueueFree();
         lootTable.Clear();
+        enemyTable.Clear();
 
         InitRoomScene();
     }
@@ -163,7 +155,7 @@ public class DungeonGenerator : Node
         .ToList();
     }
 
-    void SetEnemyList()
+    void SetEnemyList() //A copy of above but I didn't want to abstract it out because it added way too much complexity than it was worth.
     {
         foreach (string id in Database.Instance.Enemies.GetDungeonEnemyIds(dungeonType))
         {
@@ -171,11 +163,12 @@ public class DungeonGenerator : Node
             if (enemy == null) continue;
 
             int weight = CalculateRarityWeight(enemy.Rarity);
-            lootTable.Add((enemy.Id, weight));
+            enemyTable.Add((enemy.Id, weight));
             enemyWeight += weight;
+            GD.Print($"{dungeonType}, {enemy.Id}");
         }
 
-        enemyIds = enemyIds
+        enemyTable = enemyTable
         .OrderByDescending(e => e.Item2)
         .ToList();
     }
@@ -265,6 +258,7 @@ public class DungeonGenerator : Node
                 rooms[ny, nx].SetExits(Opposite[direction]);
 
                 SetRandomItem(rooms[ny, nx]);
+                SetRandomEnemy(rooms[ny, nx]);
 
                 goalPosition = new Vector2Int(nx, ny);
 
@@ -287,6 +281,25 @@ public class DungeonGenerator : Node
             if (randomWeight < accumulated)
             {
                 room.AddItem(entry.Item1);
+                return;
+            }
+        }
+    }
+
+    void SetRandomEnemy(RoomData room)
+    {
+        if (enemyTable.Count == 0 || random.NextDouble() > encounterChance)
+            return;
+
+        int randomWeight = random.Next(0, enemyWeight);
+        int accumulated = 0;
+
+        foreach (var entry in enemyTable)
+        {
+            accumulated += entry.Item2;
+            if (randomWeight < accumulated)
+            {
+                room.AddEnemy(entry.Item1);
                 return;
             }
         }
