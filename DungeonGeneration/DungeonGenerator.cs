@@ -12,28 +12,32 @@ public class DungeonGenerator : Node
     [Export] public float dropChance = 0.3f;
 
     // Scene References
-    private PackedScene mapTilePrefab;
-    private PackedScene roomPrefab;
-    private Node container;
+    PackedScene mapTilePrefab;
+    PackedScene roomPrefab;
+    Node container;
 
     // Dungeon State
-    private int level = 1;
-    private DungeonType dungeonType;
-    private Room room;
-    private Vector2Int currentPosition;
-    private Vector2Int goalPosition;
+    int level = 1;
+    DungeonType dungeonType;
+    Room room;
+    Vector2Int currentPosition;
+    Vector2Int goalPosition;
 
     // Map Data
-    private RoomData[,] rooms;
-    private MapTile[,] tiles;
+    RoomData[,] rooms;
+    MapTile[,] tiles;
 
     // Randomization
-    private int seed = -1;
-    private Random random;
+    int seed = -1;
+    Random random;
 
     // Loot System
-    private List<(string, int)> lootTable = new List<(string, int)>();
-    private int totalWeight = 0;
+    List<(string, int)> lootTable = new List<(string, int)>();
+    int lootWeight = 0;
+
+    // Enemies
+    List<(string, int)> enemyIds = new List<(string, int)>();
+    int enemyWeight = 0;
 
     // Diagnostics
     private readonly Stopwatch stopwatch = new Stopwatch();
@@ -125,7 +129,15 @@ public class DungeonGenerator : Node
         dungeonType = GetRandomDungeonType();
         GD.Print(dungeonType);
         room.SetType(dungeonType);
+
+        if (Database.Instance == null)
+        {
+            GD.PushError("Database instance is null!");
+            return;
+        }
+
         SetLootTable();
+        SetEnemyList();
     }
 
     DungeonType GetRandomDungeonType()
@@ -136,22 +148,14 @@ public class DungeonGenerator : Node
 
     void SetLootTable()
     {
-        if (Database.Instance == null)
-        {
-            GD.PushError("Database instance is null!");
-            return;
-        }
-
         foreach (string id in Database.Instance.Items.GetDungeonItemIds(dungeonType))
         {
             Item item = Database.Instance.Items.GetItemById(id, dungeonType);
             if (item == null) continue;
 
-            int weight = CalculateLootWeight(item.Rarity);
+            int weight = CalculateRarityWeight(item.Rarity);
             lootTable.Add((item.Id, weight));
-            totalWeight += weight;
-
-
+            lootWeight += weight;
         }
 
         lootTable = lootTable
@@ -159,7 +163,24 @@ public class DungeonGenerator : Node
         .ToList();
     }
 
-    int CalculateLootWeight(int rarity)
+    void SetEnemyList()
+    {
+        foreach (string id in Database.Instance.Enemies.GetDungeonEnemyIds(dungeonType))
+        {
+            Enemy enemy = Database.Instance.Enemies.GetEnemyById(id, dungeonType);
+            if (enemy == null) continue;
+
+            int weight = CalculateRarityWeight(enemy.Rarity);
+            lootTable.Add((enemy.Id, weight));
+            enemyWeight += weight;
+        }
+
+        enemyIds = enemyIds
+        .OrderByDescending(e => e.Item2)
+        .ToList();
+    }
+
+    int CalculateRarityWeight(int rarity)
     {
         switch (rarity)
         {
@@ -257,7 +278,7 @@ public class DungeonGenerator : Node
         if (lootTable.Count == 0 || random.NextDouble() > dropChance)
             return;
 
-        int randomWeight = random.Next(0, totalWeight);
+        int randomWeight = random.Next(0, lootWeight);
         int accumulated = 0;
 
         foreach (var entry in lootTable)

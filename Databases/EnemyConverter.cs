@@ -11,14 +11,17 @@ public class EnemyConverter : JsonConverter<Enemy>
         {
             JsonElement root = doc.RootElement;
 
-            Enemy enemy = new Enemy();
-            enemy.Name = GetStringFromJson(root, "name");
-            enemy.Img = GetStringFromJson(root, "img");
-            enemy.MaxHealth = GetIntFromJson(root, "health");
+            Enemy enemy = new Enemy
+            {
+                Name = GetStringFromJson(root, "name"),
+                Img = GetStringFromJson(root, "img"),
+                MaxHealth = GetIntFromJson(root, "health"),
+                Defense = GetIntFromJson(root, "defense"),
+                Strength = GetIntFromJson(root, "strength"),
+                Dexterity = GetIntFromJson(root, "dexterity"),
+                Rarity = GetIntFromJson(root, "rarity")
+            };
             enemy.CurrentHealth = enemy.MaxHealth;
-            enemy.Defense = GetIntFromJson(root, "defense");
-            enemy.Strength = GetIntFromJson(root, "strength");
-            enemy.Dexterity = GetIntFromJson(root, "dexterity");
             //moves
             return enemy;
         }
