@@ -11,4 +11,13 @@ texture = ExtResource( 1 )
 expand = true
 script = ExtResource( 2 )
 
+[node name="ExitContainer" type="TextureRect" parent="."]
+anchor_right = 1.0
+anchor_bottom = 1.0
+expand = true
+
 [node name="ItemContainer" parent="." instance=ExtResource( 3 )]
+
+[node name="EnemySprite" type="Sprite" parent="."]
+position = Vector2( 745, 388 )
+scale = Vector2( 0.463636, 0.463636 )

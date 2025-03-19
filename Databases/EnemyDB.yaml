@@ -1,20 +1,20 @@
 stone:
   stone_golem:
-    name: Stone Golem
-    img: res://icon.png
-    health: 200
-    defense: 10
-    strength: 10
-    dexterity: 3
+    name: Roach
+    img: res://PlaceholderArt/PlaceholderRoach.png
+    health: 100
+    defense: 3
+    strength: 1
+    dexterity: 4
     moves:
-      action: Boulder Slam
-      power: 15
+      action: Skitter
+      power: 3
       accuracy: 90
     rarity: 1
 ice:
   stone_golem:
     name: Ice Giant
-    img: res://icon.png
+    img: res://PlaceholderArt/PlaceholderRoach.png
     health: 200
     defense: 10
     strength: 10
@@ -28,7 +28,7 @@ ice:
 lava:
   stone_golem:
     name: Lava Giant
-    img: res://icon.png
+    img: res://PlaceholderArt/PlaceholderRoach.png
     health: 200
     defense: 10
     strength: 10

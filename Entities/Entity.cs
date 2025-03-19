@@ -1,5 +1,5 @@
 using Godot;
-using System.Collections.Generic;
+using System;
 
 public class Entity
 {
@@ -13,7 +13,7 @@ public class Entity
     public int Defense; // amount used to block attacks.
     public int Strength; // amount used to supplement attacks.
     public int Dexterity; // amount used to calculate miss chance.
-
+    Random random = new Random();
 
     public void TakeDamage(int value)
     {
@@ -28,6 +28,11 @@ public class Entity
     public void Heal(int value)
     {
         CurrentHealth += Mathf.Clamp(value, 0, MaxHealth);
+    }
+
+    public int BaseAttack()
+    {
+        return random.Next(Strength / 2, Strength);
     }
 
     public void Die()

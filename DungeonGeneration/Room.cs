@@ -3,8 +3,11 @@ using System.Collections.Generic;
 
 public class Room : TextureRect
 {
-    PackedScene containerScene;
     PackedScene itemScene;
+
+    Control itemContainer;
+    Sprite enemyContainer;
+    TextureRect exitContainer;
     RoomData roomData;
 
     DungeonType dungeonType;
@@ -12,7 +15,10 @@ public class Room : TextureRect
 
     public override void _Ready()
     {
-        containerScene = GD.Load<PackedScene>("res://DungeonGeneration/ItemContainer.tscn");
+        itemContainer = GetNode<Control>("ItemContainer");
+        enemyContainer = GetNode<Sprite>("EnemySprite");
+        exitContainer = GetNode<TextureRect>("ExitContainer");
+
         itemScene = GD.Load<PackedScene>("res://DungeonGeneration/RoomItem.tscn");
     }
 
@@ -47,19 +53,19 @@ public class Room : TextureRect
     {
         if (roomData.Exits.HasFlag(Direction.North))
         {
-            SpawnTextureRect(Direction.North);
+            exitContainer.Texture = GD.Load<Texture>(ExitMap[Direction.North]);
         }
         if (roomData.Exits.HasFlag(Direction.South))
         {
-            SpawnTextureRect(Direction.South);
+            exitContainer.Texture = GD.Load<Texture>(ExitMap[Direction.South]);
         }
         if (roomData.Exits.HasFlag(Direction.East))
         {
-            SpawnTextureRect(Direction.East);
+            exitContainer.Texture = GD.Load<Texture>(ExitMap[Direction.East]);
         }
         if (roomData.Exits.HasFlag(Direction.West))
         {
-            SpawnTextureRect(Direction.West);
+            exitContainer.Texture = GD.Load<Texture>(ExitMap[Direction.West]);
         }
     }
 
@@ -67,16 +73,13 @@ public class Room : TextureRect
     {
         if (roomData.ItemIDs.Count == 0) return;
 
-        Control container = containerScene.Instance() as Control;
-        AddChild(container);
-
         foreach (string itemID in roomData.ItemIDs)
         {
             Item item = Database.Instance.Items.GetItemById(itemID);
             GD.Print($"This room has a {item.Name}");
 
             RoomItem itemRect = itemScene.Instance() as RoomItem;
-            container.AddChild(itemRect);
+            itemContainer.AddChild(itemRect);
             itemRect.Texture = GD.Load<Texture>(item.Img);
             itemRect.Init(itemID, dungeonType, roomData);
             itemList.Add(itemRect);
@@ -106,26 +109,18 @@ public class Room : TextureRect
             Enemy enemy = Database.Instance.Enemies.GetEnemyById(enemyId);
             GD.Print($"This room has a {enemy.Name}");
 
-            //set up visual
+            enemyContainer.Texture = GD.Load<Texture>(enemy.Img);
         }
-    }
-
-    void SpawnTextureRect(Direction direction)
-    {
-        TextureRect img = new TextureRect();
-        AddChild(img);
-        img.AnchorRight = 1;
-        img.AnchorBottom = 1;
-        img.Expand = true;
-        img.Texture = GD.Load<Texture>(ExitMap[direction]);
     }
 
     void ClearRoom()
     {
-        foreach (Node child in GetChildren())
+        foreach (Node child in itemContainer.GetChildren())
         {
             child.QueueFree();
         }
+        enemyContainer.Texture = null;
+        exitContainer.Texture = null;
         itemList.Clear();
     }
 

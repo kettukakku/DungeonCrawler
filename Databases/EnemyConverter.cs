@@ -1,7 +1,7 @@
 using System;
 using System.Text.Json;
 using System.Text.Json.Serialization;
-using static JsonUtils.Converters;
+using static DungeonCrawler.Utilities.JsonUtils;
 
 public class EnemyConverter : JsonConverter<Enemy>
 {

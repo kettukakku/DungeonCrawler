@@ -1,9 +1,9 @@
 using System.Text.Json;
 using Godot;
 
-namespace JsonUtils
+namespace DungeonCrawler.Utilities
 {
-    public static class Converters
+    public static class JsonUtils
     {
         public static string GetStringFromJson(JsonElement root, string property)
         {

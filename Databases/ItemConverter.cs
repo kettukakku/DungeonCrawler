@@ -1,7 +1,7 @@
 using System;
 using System.Text.Json;
 using System.Text.Json.Serialization;
-using static JsonUtils.Converters;
+using static DungeonCrawler.Utilities.JsonUtils;
 using Godot;
 
 public class ItemConverter : JsonConverter<Item>
