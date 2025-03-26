@@ -3,7 +3,7 @@ using Godot;
 
 public class Weapon : Item
 {
-    public IWeaponAbility Ability;
+    public IAbility Ability;
     public int Damage;
     public string Slot;
 
@@ -13,12 +13,12 @@ public class Weapon : Item
     }
 }
 
-public interface IWeaponAbility
+public interface IAbility
 {
     void Apply(Entity target);
 }
 
-public class BaseAttackAbility : IWeaponAbility
+public class BaseAttackAbility : IAbility
 {
     int baseDamage;
 
@@ -35,7 +35,7 @@ public class BaseAttackAbility : IWeaponAbility
 
 public static class WeaponAbilityFactory
 {
-    public static IWeaponAbility CreateEffect(string action, int amount)
+    public static IAbility CreateEffect(string action, int amount)
     {
         switch (action)
         {

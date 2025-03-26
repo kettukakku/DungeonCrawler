@@ -51,6 +51,11 @@ public class MapTile : TextureRect
         }
     }
 
+    public void Reset()
+    {
+        Modulate = new Color(0, 0, 0, 0);
+    }
+
     readonly Dictionary<Direction, string> TileMap = new Dictionary<Direction, string>()
     {
         {Direction.North, "res://PlaceholderArt/maptiles/N.png"},

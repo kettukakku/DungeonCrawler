@@ -27,6 +27,7 @@ public class DungeonGenerator : Node
     // Map Data
     RoomData[,] rooms;
     MapTile[,] tiles;
+    Queue<MapTile> tilePool = new Queue<MapTile>();
 
     // Randomization
     Random random = new Random();
@@ -108,12 +109,19 @@ public class DungeonGenerator : Node
 
     void Reset()
     {
-        container.QueueFree();
-        room.QueueFree();
+        foreach (MapTile tile in tiles)
+        {
+            ReturnMapTileToQueue(tile);
+        }
         lootTable.Clear();
         enemyTable.Clear();
+    }
 
-        InitRoomScene();
+    void ReturnMapTileToQueue(MapTile tile)
+    {
+        tile.Reset();
+        tile.GetParent().RemoveChild(tile);
+        tilePool.Enqueue(tile);
     }
 
     void SetDungeonType()
@@ -202,7 +210,7 @@ public class DungeonGenerator : Node
         {
             for (int x = 0; x < mapWidth; x++)
             {
-                MapTile tile = mapTilePrefab.Instance() as MapTile;
+                MapTile tile = GetMapTileFromPool();
                 RoomData data = new RoomData(x, y);
 
                 container.AddChild(tile);
@@ -212,6 +220,15 @@ public class DungeonGenerator : Node
                 rooms[y, x] = data; // I'll probably fix it later since I've made a ton of errors because of it
             }
         }
+    }
+
+    MapTile GetMapTileFromPool()
+    {
+        if (tilePool.Count > 0)
+        {
+            return tilePool.Dequeue();
+        }
+        return mapTilePrefab.Instance() as MapTile;
     }
 
     void CreateMaze()
@@ -224,8 +241,8 @@ public class DungeonGenerator : Node
         stopwatch.Restart();
 
         Move();
-        rooms[goalPosition.y, goalPosition.x].SetGoal();
-        tiles[goalPosition.y, goalPosition.x].SetColor(new Color("FF0000")); //temp for debugging
+        GetRoom(goalPosition).SetGoal();
+        GetTile(goalPosition).SetColor(new Color("FF0000")); //temp for debugging
         PrintStopwatchTime("fill rooms");
     }
 
@@ -239,13 +256,7 @@ public class DungeonGenerator : Node
 
     void CarvePath(int cx, int cy)
     {
-        var directions = new List<Direction>
-        {
-            Direction.North,
-            Direction.South,
-            Direction.East,
-            Direction.West
-        }.OrderBy(_ => random.Next()).ToList();
+        List<Direction> directions = AllDirections.OrderBy(_ => random.Next()).ToList();
 
         foreach (var direction in directions)
         {
@@ -307,9 +318,9 @@ public class DungeonGenerator : Node
 
     void TryToMove(Direction direction)
     {
-        if (rooms[currentPosition.y, currentPosition.x].Exits.HasFlag(direction))
+        if ((GetRoom(currentPosition).Exits & direction) != 0)
         {
-            rooms[currentPosition.y, currentPosition.x].Exit();
+            GetRoom(currentPosition).Exit();
             currentPosition += DirectionMap[direction];
             Move();
         }
@@ -321,9 +332,17 @@ public class DungeonGenerator : Node
 
     void Move()
     {
-        rooms[currentPosition.y, currentPosition.x].Enter();
-        room.FillRoom(rooms[currentPosition.y, currentPosition.x]);
+        GetRoom(currentPosition).Enter();
+        room.FillRoom(GetRoom(currentPosition));
     }
+
+    readonly List<Direction> AllDirections = new List<Direction>
+    {
+        Direction.North,
+        Direction.South,
+        Direction.East,
+        Direction.West
+    };
 
     readonly Dictionary<Direction, (int x, int y)> DirectionMap = new Dictionary<Direction, (int x, int y)>()
     {
@@ -340,5 +359,8 @@ public class DungeonGenerator : Node
         {Direction.East, Direction.West},
         {Direction.West, Direction.East}
     };
+
+    RoomData GetRoom(Vector2Int position) => rooms[position.y, position.x];
+    MapTile GetTile(Vector2Int position) => tiles[position.y, position.x];
 }
 
