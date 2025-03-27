@@ -29,7 +29,6 @@ public class RoomItem : TextureRect
         {
             roomData.RemoveItem(itemID);
             OnDestroy?.Invoke(this);
-            QueueFree();
         }
     }
 }

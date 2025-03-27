@@ -4,31 +4,45 @@ using System.Collections.Generic;
 public class Room : TextureRect
 {
     PackedScene itemScene;
+    PackedScene exitScene;
 
     Control itemContainer;
     Sprite enemyContainer;
-    TextureRect exitContainer;
     RoomData roomData;
 
     DungeonType dungeonType;
     List<RoomItem> itemList = new List<RoomItem>();
+    Dictionary<Direction, TextureRect> exitContainers = new Dictionary<Direction, TextureRect>();
+    Queue<RoomItem> itemPool = new Queue<RoomItem>();
 
     public override void _Ready()
     {
         itemContainer = GetNode<Control>("ItemContainer");
         enemyContainer = GetNode<Sprite>("EnemySprite");
-        exitContainer = GetNode<TextureRect>("ExitContainer");
 
         itemScene = GD.Load<PackedScene>("res://DungeonGeneration/RoomItem.tscn");
+        exitScene = GD.Load<PackedScene>("res://DungeonGeneration/ExitContainer.tscn");
+
+        foreach (var kvp in ExitMap)
+        {
+            ExitTextures[kvp.Key] = GD.Load<Texture>(kvp.Value);
+
+            TextureRect container = exitScene.Instance() as TextureRect;
+            exitContainers.Add(kvp.Key, container);
+            AddChild(container);
+            MoveChild(container, 0); //temporary
+            container.Texture = ExitTextures[kvp.Key];
+            container.Visible = false;
+        }
     }
 
     public override void _Input(InputEvent @event)
     {
         if (@event.IsActionPressed("pickup"))
         {
-            foreach (RoomItem item in itemList.ToArray())
+            for (int i = itemList.Count - 1; i >= 0; i--)
             {
-                item.TryToPickup();
+                itemList[i].TryToPickup();
             }
         }
     }
@@ -42,31 +56,25 @@ public class Room : TextureRect
     {
         ClearRoom();
         roomData = data;
-
-
-        ShowExits();
+        GetAvailableExits();
         ShowItems();
         ShowEnemies();
     }
 
-    void ShowExits()
+    void GetAvailableExits()
     {
-        if (roomData.Exits.HasFlag(Direction.North))
-        {
-            exitContainer.Texture = GD.Load<Texture>(ExitMap[Direction.North]);
-        }
-        if (roomData.Exits.HasFlag(Direction.South))
-        {
-            exitContainer.Texture = GD.Load<Texture>(ExitMap[Direction.South]);
-        }
-        if (roomData.Exits.HasFlag(Direction.East))
-        {
-            exitContainer.Texture = GD.Load<Texture>(ExitMap[Direction.East]);
-        }
-        if (roomData.Exits.HasFlag(Direction.West))
-        {
-            exitContainer.Texture = GD.Load<Texture>(ExitMap[Direction.West]);
-        }
+        Direction exits = roomData.Exits;
+
+        if ((exits & Direction.North) != 0) ShowExit(Direction.North);
+        if ((exits & Direction.South) != 0) ShowExit(Direction.South);
+        if ((exits & Direction.East) != 0) ShowExit(Direction.East);
+        if ((exits & Direction.West) != 0) ShowExit(Direction.West);
+
+    }
+
+    void ShowExit(Direction direction)
+    {
+        exitContainers[direction].Visible = true;
     }
 
     void ShowItems()
@@ -78,7 +86,7 @@ public class Room : TextureRect
             Item item = Database.Instance.Items.GetItemById(itemID);
             GD.Print($"This room has a {item.Name}");
 
-            RoomItem itemRect = itemScene.Instance() as RoomItem;
+            RoomItem itemRect = GetItemFromPool();
             itemContainer.AddChild(itemRect);
             itemRect.Texture = GD.Load<Texture>(item.Img);
             itemRect.Init(itemID, dungeonType, roomData);
@@ -87,17 +95,27 @@ public class Room : TextureRect
         }
     }
 
+    RoomItem GetItemFromPool()
+    {
+        if (itemPool.Count > 0)
+        {
+            return itemPool.Dequeue();
+        }
+        return itemScene.Instance() as RoomItem;
+    }
+
     void RemoveItem(RoomItem item)
     {
-        int index = itemList.IndexOf(item);
-        if (index == -1)
+        if (!itemList.Remove(item))
         {
             GD.PrintErr($"{item} does not exist in {this}!");
             return;
         }
 
-        itemList[index].OnDestroy -= RemoveItem;
-        itemList.RemoveAt(index);
+        item.OnDestroy -= RemoveItem;
+        itemContainer.RemoveChild(item);
+        itemPool.Enqueue(item);
+        itemList.Remove(item);
     }
 
     void ShowEnemies()
@@ -115,13 +133,15 @@ public class Room : TextureRect
 
     void ClearRoom()
     {
-        foreach (Node child in itemContainer.GetChildren())
+        for (int i = itemList.Count - 1; i >= 0; i--)
         {
-            child.QueueFree();
+            RemoveItem(itemList[i]);
         }
         enemyContainer.Texture = null;
-        exitContainer.Texture = null;
-        itemList.Clear();
+        foreach (TextureRect container in exitContainers.Values)
+        {
+            container.Visible = false;
+        }
     }
 
     public override void _ExitTree()
@@ -139,4 +159,6 @@ public class Room : TextureRect
         {Direction.East, "res://PlaceholderArt/room/DoorEast.png"},
         {Direction.West, "res://PlaceholderArt/room/DoorWest.png"}
     };
+
+    readonly Dictionary<Direction, Texture> ExitTextures = new Dictionary<Direction, Texture>();
 }

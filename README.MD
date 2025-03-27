@@ -33,6 +33,7 @@ This is largely a test project making use of some art from a game jam. But maybe
 - [ ] Create cosmetic item database.
 - [ ] Implement item 'use' function.
 - [ ] Implement error popups/feedback (inventory full, can't move, etc)
+- [ ] Finish setting up object pooling for better optimization.
 
 ## ✅ Completed Tasks
 
