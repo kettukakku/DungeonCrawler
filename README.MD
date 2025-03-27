@@ -33,7 +33,9 @@ This is largely a test project making use of some art from a game jam. But maybe
 - [ ] Create cosmetic item database.
 - [ ] Implement item 'use' function.
 - [ ] Implement error popups/feedback (inventory full, can't move, etc)
-- [ ] Finish setting up object pooling for better optimization.
+- [ ] Optimize!
+  - [ ] DungeonGenerator: Only spawn tiles from pool when visited (they're invisible in the map beforehand anyway).
+  - [x] ~~DungeonGenerator: Roll for loot/enemies as the player travels instead of filling the entire map from the start.~~
 
 ## ✅ Completed Tasks
 

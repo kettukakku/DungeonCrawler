@@ -13,7 +13,7 @@ public class Entity
     public int Defense; // amount used to block attacks.
     public int Strength; // amount used to supplement attacks.
     public int Dexterity; // amount used to calculate miss chance.
-    Random random = new Random();
+    readonly Random random = new Random();
 
     public void TakeDamage(int value)
     {

@@ -11,9 +11,9 @@ public class Room : TextureRect
     RoomData roomData;
 
     DungeonType dungeonType;
-    List<RoomItem> itemList = new List<RoomItem>();
-    Dictionary<Direction, TextureRect> exitContainers = new Dictionary<Direction, TextureRect>();
-    Queue<RoomItem> itemPool = new Queue<RoomItem>();
+    readonly List<RoomItem> itemList = new List<RoomItem>();
+    readonly Dictionary<Direction, TextureRect> exitContainers = new Dictionary<Direction, TextureRect>();
+    readonly Queue<RoomItem> itemPool = new Queue<RoomItem>();
 
     public override void _Ready()
     {
@@ -33,6 +33,7 @@ public class Room : TextureRect
             MoveChild(container, 0); //temporary
             container.Texture = ExitTextures[kvp.Key];
             container.Visible = false;
+            container.Name = $"Exit {kvp.Key}";
         }
     }
 
@@ -91,7 +92,7 @@ public class Room : TextureRect
             itemRect.Texture = GD.Load<Texture>(item.Img);
             itemRect.Init(itemID, dungeonType, roomData);
             itemList.Add(itemRect);
-            itemRect.OnDestroy += RemoveItem;
+            itemRect.OnPickedUp += RemoveItem;
         }
     }
 
@@ -112,7 +113,7 @@ public class Room : TextureRect
             return;
         }
 
-        item.OnDestroy -= RemoveItem;
+        item.OnPickedUp -= RemoveItem;
         itemContainer.RemoveChild(item);
         itemPool.Enqueue(item);
         itemList.Remove(item);
@@ -148,7 +149,7 @@ public class Room : TextureRect
     {
         foreach (RoomItem item in itemList)
         {
-            item.OnDestroy -= RemoveItem;
+            item.OnPickedUp -= RemoveItem;
         }
     }
 

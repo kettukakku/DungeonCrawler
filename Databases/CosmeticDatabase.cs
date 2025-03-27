@@ -5,5 +5,5 @@ using Godot;
 
 public class CosmeticDatabase
 {
-    readonly Dictionary<string, Cosmetic> allCosmetics = new Dictionary<string, Cosmetic>();
+    //readonly Dictionary<string, Cosmetic> allCosmetics = new Dictionary<string, Cosmetic>();
 }

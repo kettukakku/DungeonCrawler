@@ -6,46 +6,40 @@ using System.Linq;
 
 public class DungeonGenerator : Node
 {
-    // Exported Configuration
+    #region Exported Config Variables
     [Export] public int mapHeight = 12;
     [Export] public int mapWidth = 15;
-    [Export] public float dropChance = 0.3f;
-    [Export] public float encounterChance = 0.2f;
+    #endregion
 
-    // Scene References
+    #region Scene Prefabs & References
     PackedScene mapTilePrefab;
-    PackedScene roomPrefab;
-    Node container;
+    FloorNumberText floorNumberText;
+    GridContainer mapContainer;
+    Room room;
+    EncounterManager encounterManager;
+    #endregion
 
-    // Dungeon State
+    #region Dungeon State
     int level = 1;
     DungeonType dungeonType;
-    Room room;
     Vector2Int currentPosition;
     Vector2Int goalPosition;
+    #endregion
 
-    // Map Data
+    #region Map Data Arrays
     RoomData[,] rooms;
     MapTile[,] tiles;
-    Queue<MapTile> tilePool = new Queue<MapTile>();
+    readonly Queue<MapTile> tilePool = new Queue<MapTile>();
+    #endregion
 
-    // Randomization
-    Random random = new Random();
-
-    // Loot System
-    List<(string, int)> lootTable = new List<(string, int)>();
-    int lootWeight = 0;
-
-    // Enemies
-    List<(string, int)> enemyTable = new List<(string, int)>();
-    int enemyWeight = 0;
-
-    // Diagnostics
-    private readonly Stopwatch stopwatch = new Stopwatch();
+    #region Utils
+    readonly Random random = new Random();
+    readonly Stopwatch stopwatch = new Stopwatch();
+    #endregion
 
     public override void _Ready()
     {
-        InitPrefabs();
+        InitScenes();
         Generate();
     }
 
@@ -70,29 +64,26 @@ public class DungeonGenerator : Node
 
         if (@event.IsActionPressed("enter") && currentPosition == goalPosition)
         {
-            Reset();
+            ResetTiles();
             level++;
             Generate();
         }
     }
 
-    void InitPrefabs()
+    void InitScenes()
     {
         mapTilePrefab = GD.Load<PackedScene>("res://DungeonGeneration/MapTile.tscn");
-        roomPrefab = GD.Load<PackedScene>("res://DungeonGeneration/Room.tscn");
-        InitRoomScene();
 
-        if (mapTilePrefab == null || roomPrefab == null)
-        {
-            GD.PrintErr("Failed to load dungeon prefabs. Check the file path/name!");
-            QueueFree();
-        }
-    }
-
-    void InitRoomScene()
-    {
-        room = roomPrefab.Instance() as Room;
+        room = GD.Load<PackedScene>("res://DungeonGeneration/Room.tscn").Instance() as Room;
         AddChild(room);
+
+        floorNumberText = GD.Load<PackedScene>("res://DungeonGeneration/FloorNumberText.tscn").Instance() as FloorNumberText;
+        AddChild(floorNumberText);
+
+        mapContainer = new GridContainer { Columns = mapWidth };
+        AddChild(mapContainer);
+
+        encounterManager = new EncounterManager(random);
     }
 
     void Generate()
@@ -104,40 +95,32 @@ public class DungeonGenerator : Node
         PrintStopwatchTime("create empty rooms");
 
         CreateMaze();
-        GD.Print($"You're on level {level}.");
+        floorNumberText.SetText(level);
     }
 
-    void Reset()
+    void ResetTiles()
     {
         foreach (MapTile tile in tiles)
         {
-            ReturnMapTileToQueue(tile);
+            tile.Reset();
+            tile.GetParent().RemoveChild(tile);
+            tilePool.Enqueue(tile);
         }
-        lootTable.Clear();
-        enemyTable.Clear();
-    }
-
-    void ReturnMapTileToQueue(MapTile tile)
-    {
-        tile.Reset();
-        tile.GetParent().RemoveChild(tile);
-        tilePool.Enqueue(tile);
     }
 
     void SetDungeonType()
     {
+        DungeonType lastType = dungeonType;
+
         dungeonType = GetRandomDungeonType();
-        GD.Print(dungeonType);
-        room.SetType(dungeonType);
 
-        if (Database.Instance == null)
+        if (dungeonType != lastType)
         {
-            GD.PushError("Database instance is null!");
-            return;
-        }
+            encounterManager.SetLootTable(dungeonType);
+            encounterManager.SetEnemyList(dungeonType);
 
-        SetLootTable();
-        SetEnemyList();
+            room.SetType(dungeonType);
+        }
     }
 
     DungeonType GetRandomDungeonType()
@@ -146,65 +129,12 @@ public class DungeonGenerator : Node
         return (DungeonType)values.GetValue(random.Next(1, values.Length)); //Intentionally skips 'universal', which is 0.
     }
 
-    void SetLootTable()
-    {
-        foreach (string id in Database.Instance.Items.GetDungeonItemIds(dungeonType))
-        {
-            Item item = Database.Instance.Items.GetItemById(id, dungeonType);
-            if (item == null) continue;
-
-            int weight = CalculateRarityWeight(item.Rarity);
-            lootTable.Add((item.Id, weight));
-            lootWeight += weight;
-        }
-
-        lootTable = lootTable
-        .OrderByDescending(e => e.Item2)
-        .ToList();
-    }
-
-    void SetEnemyList() //A copy of above but I didn't want to abstract it out because it added way too much complexity than it was worth.
-    {
-        foreach (string id in Database.Instance.Enemies.GetDungeonEnemyIds(dungeonType))
-        {
-            Enemy enemy = Database.Instance.Enemies.GetEnemyById(id, dungeonType);
-            if (enemy == null) continue;
-
-            int weight = CalculateRarityWeight(enemy.Rarity);
-            enemyTable.Add((enemy.Id, weight));
-            enemyWeight += weight;
-            GD.Print($"{dungeonType}, {enemy.Id}");
-        }
-
-        enemyTable = enemyTable
-        .OrderByDescending(e => e.Item2)
-        .ToList();
-    }
-
-    int CalculateRarityWeight(int rarity)
-    {
-        switch (rarity)
-        {
-            case 1:
-                return 500;  // 50% chance pool
-            case 2:
-                return 300;  // 30%
-            case 3:
-                return 150;  // 15%
-            case 4:
-                return 50;   // 5%
-            default:
-                return 100;  // 10% default
-        }
-    }
-
     void CreateEmptyRooms()
     {
-
         rooms = new RoomData[mapHeight, mapWidth];
         tiles = new MapTile[mapHeight, mapWidth];
-        container = new GridContainer { Columns = mapWidth };
-        AddChild(container);
+
+        mapContainer.Columns = mapWidth;
 
         for (int y = 0; y < mapHeight; y++)
         {
@@ -213,7 +143,7 @@ public class DungeonGenerator : Node
                 MapTile tile = GetMapTileFromPool();
                 RoomData data = new RoomData(x, y);
 
-                container.AddChild(tile);
+                mapContainer.AddChild(tile);
                 tile.SetLinkedRoom(data);
 
                 tiles[y, x] = tile; //I don't like these being swapped, but I'm pretty sure I did it this way to make it work easier with GridContainer
@@ -256,9 +186,7 @@ public class DungeonGenerator : Node
 
     void CarvePath(int cx, int cy)
     {
-        List<Direction> directions = AllDirections.OrderBy(_ => random.Next()).ToList();
-
-        foreach (var direction in directions)
+        foreach (var direction in ShuffledDirections())
         {
             int nx = cx + DirectionMap[direction].x;
             int ny = cy + DirectionMap[direction].y;
@@ -268,9 +196,6 @@ public class DungeonGenerator : Node
                 rooms[cy, cx].SetExits(direction);
                 rooms[ny, nx].SetExits(Opposite[direction]);
 
-                SetRandomItem(rooms[ny, nx]);
-                SetRandomEnemy(rooms[ny, nx]);
-
                 goalPosition = new Vector2Int(nx, ny);
 
                 CarvePath(nx, ny);
@@ -278,42 +203,16 @@ public class DungeonGenerator : Node
         }
     }
 
-    void SetRandomItem(RoomData room)
+    List<Direction> ShuffledDirections()
     {
-        if (lootTable.Count == 0 || random.NextDouble() > dropChance)
-            return;
-
-        int randomWeight = random.Next(0, lootWeight);
-        int accumulated = 0;
-
-        foreach (var entry in lootTable)
+        List<Direction> shuffled = new List<Direction>(AllDirections);
+        int dir = AllDirections.Count;
+        for (int i = dir - 1; i > 0; i--)
         {
-            accumulated += entry.Item2;
-            if (randomWeight < accumulated)
-            {
-                room.AddItem(entry.Item1);
-                return;
-            }
+            int j = random.Next(0, i + 1);
+            (shuffled[i], shuffled[j]) = (shuffled[j], shuffled[i]);
         }
-    }
-
-    void SetRandomEnemy(RoomData room)
-    {
-        if (enemyTable.Count == 0 || random.NextDouble() > encounterChance)
-            return;
-
-        int randomWeight = random.Next(0, enemyWeight);
-        int accumulated = 0;
-
-        foreach (var entry in enemyTable)
-        {
-            accumulated += entry.Item2;
-            if (randomWeight < accumulated)
-            {
-                room.AddEnemy(entry.Item1);
-                return;
-            }
-        }
+        return shuffled;
     }
 
     void TryToMove(Direction direction)
@@ -326,13 +225,15 @@ public class DungeonGenerator : Node
         }
         else
         {
-            GD.Print("Can't exit from that direction!");
+            //Trigger some screen shake or "You can't do that!" pop-up.
         }
     }
 
     void Move()
     {
         GetRoom(currentPosition).Enter();
+        encounterManager.SetRandomItem(GetRoom(currentPosition));
+        encounterManager.SetRandomEnemy(GetRoom(currentPosition));
         room.FillRoom(GetRoom(currentPosition));
     }
 

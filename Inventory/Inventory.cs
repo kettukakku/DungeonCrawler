@@ -7,8 +7,8 @@ public class Inventory : CanvasLayer
     GridContainer grid;
     ActionPopup actionPopup;
     PackedScene itemPrefab;
-    List<Item> items = new List<Item>();
-    List<MenuItemContainer> containers = new List<MenuItemContainer>();
+    readonly List<Item> items = new List<Item>();
+    readonly List<MenuItemContainer> containers = new List<MenuItemContainer>();
 
 
     public override void _Ready()

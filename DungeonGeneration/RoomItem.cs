@@ -6,7 +6,7 @@ public class RoomItem : TextureRect
     string itemID;
     DungeonType dungeonType;
     RoomData roomData;
-    public event Action<RoomItem> OnDestroy;
+    public event Action<RoomItem> OnPickedUp;
 
     public override void _GuiInput(InputEvent @event)
     {
@@ -28,7 +28,7 @@ public class RoomItem : TextureRect
         if (GameManager.Instance.inventory.AddItem(itemID, dungeonType))
         {
             roomData.RemoveItem(itemID);
-            OnDestroy?.Invoke(this);
+            OnPickedUp?.Invoke(this);
         }
     }
 }

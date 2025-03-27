@@ -6,10 +6,17 @@ public class MapTile : TextureRect
     Label positionLabel;
     RoomData linkedRoom;
 
+    readonly Dictionary<Direction, Texture> tileTextures = new Dictionary<Direction, Texture>();
+
     public override void _Ready()
     {
         positionLabel = GetNode<Label>("VBoxContainer/Position");
         Modulate = new Color(0, 0, 0, 0);
+
+        foreach (var kvp in TileMap)
+        {
+            tileTextures[kvp.Key] = GD.Load<Texture>(kvp.Value);
+        }
     }
 
     public void SetLinkedRoom(RoomData room)
@@ -23,7 +30,7 @@ public class MapTile : TextureRect
 
     void SetExits(Direction directions)
     {
-        Texture = GD.Load<Texture>(TileMap[directions]);
+        Texture = tileTextures[directions];
     }
 
     void Enter()
